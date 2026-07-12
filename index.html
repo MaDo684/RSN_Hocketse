@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Schulfest Kasse — Realschule Neuffen</title>
+<link rel="icon" href="https://realschule-neuffen.de/wp-content/uploads/2025/01/cropped-Unbenannt-1-270x270.png">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ===== HEADER (angelehnt an realschule-neuffen.de) ===== -->
+<header class="site-header">
+  <div class="header-inner">
+    <img class="logo" src="https://realschule-neuffen.de/wp-content/uploads/2024/06/logo.svg" alt="Logo Realschule Neuffen">
+    <div class="header-titles">
+      <h1>Realschule Neuffen</h1>
+      <p>Schulfest-Kasse</p>
+    </div>
+    <button id="btn-admin-open" class="admin-toggle" title="Admin-Bereich">⚙️</button>
+  </div>
+</header>
+
+<!-- ===== KASSEN-ANSICHT ===== -->
+<main id="pos-view">
+
+  <div id="summary-bar">
+    <div>
+      <div class="label">Gesamt</div>
+      <div class="total" id="total-display">0,00 €</div>
+    </div>
+    <div class="items-count" id="items-count">0 Artikel</div>
+  </div>
+
+  <div class="section-title">PRODUKTE</div>
+  <div id="products-grid"></div>
+
+  <div id="cart-section">
+    <div id="cart-list"></div>
+  </div>
+
+  <div id="payment-section">
+    <h2>ZAHLUNG</h2>
+    <div id="quick-amounts"></div>
+    <div class="payment-row">
+      <label>Gegeben</label>
+      <input type="number" id="gegeben-input" placeholder="0,00" step="0.50" min="0">
+    </div>
+    <div id="rueckgeld-box">
+      <span class="rg-label">Rückgeld</span>
+      <span class="rg-amount" id="rueckgeld-display">– €</span>
+    </div>
+  </div>
+
+  <div id="action-btns">
+    <button class="action-btn secondary" id="btn-clear">🗑 Leeren</button>
+    <button class="action-btn primary" id="btn-pay">✅ Abschließen</button>
+  </div>
+
+</main>
+
+<!-- ===== FOOTER (angelehnt an realschule-neuffen.de) ===== -->
+<footer class="site-footer">
+  <img class="footer-logo" src="https://realschule-neuffen.de/wp-content/uploads/2024/06/logo_white.svg" alt="Realschule Neuffen">
+  <p>Realschule Neuffen · Hohenzollernstraße 24 · 72639 Neuffen</p>
+  <p>07025 9211-0 · info@rsneuffen.de</p>
+</footer>
+
+<!-- ===== ERFOLGS-OVERLAY ===== -->
+<div id="success-overlay">
+  <div class="success-card">
+    <div class="big-check">✅</div>
+    <h2>Bezahlt!</h2>
+    <div class="rg-big" id="overlay-rueckgeld"></div>
+    <p id="overlay-details"></p>
+    <button id="btn-next">Nächster Kunde →</button>
+  </div>
+</div>
+
+<!-- ===== ADMIN: PASSWORT-MODAL ===== -->
+<div id="admin-login-overlay">
+  <div class="admin-card">
+    <h2>🔒 Admin-Bereich</h2>
+    <p class="muted">Bitte Passwort eingeben</p>
+    <input type="password" id="admin-password-input" placeholder="Passwort">
+    <p id="admin-login-error" class="error-text"></p>
+    <div class="admin-login-btns">
+      <button id="btn-admin-cancel" class="action-btn secondary">Abbrechen</button>
+      <button id="btn-admin-login" class="action-btn primary">Anmelden</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ADMIN: BEREICH ===== -->
+<div id="admin-view">
+  <div class="admin-header">
+    <h2>⚙️ Admin-Bereich</h2>
+    <button id="btn-admin-close" class="action-btn secondary">✕ Schließen</button>
+  </div>
+
+  <div class="admin-section">
+    <h3>PRODUKTE BEARBEITEN</h3>
+    <div id="admin-product-list"></div>
+  </div>
+
+  <div class="admin-section">
+    <h3>NEUES PRODUKT ANLEGEN</h3>
+    <div class="new-product-form">
+      <label>Symbol auswählen</label>
+      <div id="icon-repository"></div>
+      <div class="selected-icon-preview">
+        Ausgewählt: <span id="selected-icon-display">🌭</span>
+      </div>
+      <label>Name</label>
+      <input type="text" id="new-product-name" placeholder="z.B. Waffel">
+      <label>Preis (€)</label>
+      <input type="number" id="new-product-price" placeholder="0.00" step="0.10" min="0">
+      <button id="btn-add-product" class="action-btn primary full-width">+ Produkt hinzufügen</button>
+    </div>
+  </div>
+
+  <div class="admin-section">
+    <h3>DATENVERWALTUNG</h3>
+    <p class="muted small">
+      Änderungen werden lokal auf diesem Gerät gespeichert (Browser-Speicher).
+      Für die Verwendung auf mehreren Geräten: Daten exportieren und die Datei
+      <code>data.json</code> im Projekt ersetzen, bevor die Seite neu veröffentlicht wird.
+    </p>
+    <div class="admin-data-btns">
+      <button id="btn-export" class="action-btn secondary">⬇ Exportieren</button>
+      <button id="btn-reset" class="action-btn secondary danger">↺ Zurücksetzen</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+</body>
+</html>
