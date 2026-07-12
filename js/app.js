@@ -15,12 +15,13 @@ async function sha256(text) {
 }
 
 // ---------- ICON-REPOSITORY für neue Produkte ----------
+// Klassische Verkaufsartikel eines Schulfests (Essen, Trinken, Süßes, Kirmes)
 const ICON_REPOSITORY = [
-  "🌭","🍔","🥤","☕","🍰","🍩","🧃","🍦","🍿","🥨",
-  "🍕","🌮","🥙","🍟","🍗","🧁","🍪","🍫","🍬","🍭",
-  "🥧","🍎","🍊","🍇","🍉","🍓","🍒","🥝","🍋","🧊",
-  "🍷","🍺","🥛","🍵","🎂","🍨","🍧","🍯","🥞","🧇",
-  "🎟️","🎈","🎨","🧸","🎲","🎯","🍀","⭐","🎁","🏆"
+  "🌭","🍔","🥩","🍢","🥪","🥖","🧀","🍕","🌮","🥙",
+  "🍟","🥨","🧇","🥞","🍰","🧁","🍪","🍫","🍬","🍭",
+  "🥧","🍮","🍦","🍨","🍧","🎂","🍩","🍯","☕","🍵","🧃",
+  "🥤","🧊","🍺","🍷","🥛","🍎","🍊","🍇","🍉","🍓",
+  "🍒","🥝","🍋","🍿","🎟️","🎪","🎡","🎠","🍡","🥮"
 ];
 
 // ---------- STANDARD-PRODUKTE ----------
@@ -130,6 +131,7 @@ function getItemCount() {
 function updateTotals() {
   const total = getTotal();
   document.getElementById('total-display').textContent = fmt(total);
+  document.getElementById('payment-total-display').textContent = fmt(total);
   const count = getItemCount();
   document.getElementById('items-count').textContent = count === 0 ? '0 Artikel' : count + ' Artikel';
   updateRueckgeld();
@@ -249,10 +251,14 @@ document.getElementById('btn-admin-close').onclick = () => {
 function renderAdminProducts() {
   const container = document.getElementById('admin-product-list');
   container.innerHTML = '';
-  products.forEach(p => {
+  products.forEach((p, index) => {
     const row = document.createElement('div');
     row.className = 'admin-product-row';
     row.innerHTML = `
+      <div class="move-btns">
+        <button class="move-btn move-up" data-id="${p.id}" ${index === 0 ? 'disabled' : ''}>▲</button>
+        <button class="move-btn move-down" data-id="${p.id}" ${index === products.length - 1 ? 'disabled' : ''}>▼</button>
+      </div>
       <span class="ap-emoji">${p.emoji}</span>
       <input type="text" data-id="${p.id}" data-field="name" value="${p.name}">
       <input type="number" data-id="${p.id}" data-field="price" value="${p.price.toFixed(2)}" step="0.10" min="0">
@@ -282,7 +288,40 @@ function renderAdminProducts() {
       renderAdminProducts();
     };
   });
+
+  container.querySelectorAll('.move-up').forEach(btn => {
+    btn.onclick = () => moveProduct(parseInt(btn.dataset.id), -1);
+  });
+  container.querySelectorAll('.move-down').forEach(btn => {
+    btn.onclick = () => moveProduct(parseInt(btn.dataset.id), 1);
+  });
 }
+
+function moveProduct(id, direction) {
+  const index = products.findIndex(p => p.id === id);
+  const newIndex = index + direction;
+  if (newIndex < 0 || newIndex >= products.length) return;
+  [products[index], products[newIndex]] = [products[newIndex], products[index]];
+  saveProducts();
+  renderAdminProducts();
+}
+
+// ---------- Sortier-Buttons ----------
+document.getElementById('btn-sort-name').onclick = () => {
+  products.sort((a, b) => a.name.localeCompare(b.name, 'de'));
+  saveProducts();
+  renderAdminProducts();
+};
+document.getElementById('btn-sort-price-asc').onclick = () => {
+  products.sort((a, b) => a.price - b.price);
+  saveProducts();
+  renderAdminProducts();
+};
+document.getElementById('btn-sort-price-desc').onclick = () => {
+  products.sort((a, b) => b.price - a.price);
+  saveProducts();
+  renderAdminProducts();
+};
 
 // ============================================================
 // ADMIN: NEUES PRODUKT / ICON-REPOSITORY

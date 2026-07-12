@@ -183,6 +183,26 @@ body {
   box-shadow: var(--shadow);
   padding: 16px;
 }
+.payment-total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding-bottom: 14px;
+  margin-bottom: 14px;
+  border-bottom: 2px solid var(--card);
+}
+.payment-total-row span:first-child {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.payment-total-row span:last-child {
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: var(--rsn-navy);
+}
 #payment-section h2 { font-size: 0.72rem; letter-spacing: 1.6px; text-transform: uppercase; color: var(--rsn-navy); margin-bottom: 12px; }
 .payment-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
 .payment-row label { font-size: 0.9rem; font-weight: 700; }
@@ -347,7 +367,20 @@ body {
   border-bottom: 1px solid var(--card);
 }
 .admin-product-row:last-child { border-bottom: none; }
-.admin-product-row .ap-emoji { font-size: 1.3rem; width: 30px; text-align: center; }
+.admin-product-row .ap-emoji { font-size: 1.3rem; width: 26px; text-align: center; }
+.move-btns { display: flex; flex-direction: column; gap: 2px; }
+.move-btn {
+  background: var(--card);
+  border: none;
+  color: var(--rsn-navy);
+  width: 22px; height: 18px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  cursor: pointer;
+  line-height: 1;
+}
+.move-btn:disabled { opacity: 0.25; cursor: default; }
 .admin-product-row input[type="text"] {
   flex: 1.4;
   background: var(--card);
@@ -377,6 +410,30 @@ body {
   cursor: pointer;
   padding: 4px 6px;
 }
+
+.sort-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin: 10px 0 6px;
+}
+.sort-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+.sort-btn {
+  background: var(--card);
+  border: none;
+  color: var(--rsn-navy);
+  border-radius: 8px;
+  padding: 7px 12px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.sort-btn:active { opacity: 0.7; }
 
 .new-product-form label {
   display: block;

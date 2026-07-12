@@ -40,6 +40,10 @@
   </div>
 
   <div id="payment-section">
+    <div class="payment-total-row">
+      <span>Zu zahlen</span>
+      <span id="payment-total-display">0,00 €</span>
+    </div>
     <h2>ZAHLUNG</h2>
     <div id="quick-amounts"></div>
     <div class="payment-row">
@@ -100,6 +104,13 @@
 
   <div class="admin-section">
     <h3>PRODUKTE BEARBEITEN</h3>
+    <div class="sort-controls">
+      <span class="sort-label">Sortieren:</span>
+      <button id="btn-sort-name" class="sort-btn">Name A–Z</button>
+      <button id="btn-sort-price-asc" class="sort-btn">Preis ↑</button>
+      <button id="btn-sort-price-desc" class="sort-btn">Preis ↓</button>
+    </div>
+    <p class="muted small">Mit den Pfeilen ↑ ↓ die Reihenfolge der Kassenbuttons frei anpassen.</p>
     <div id="admin-product-list"></div>
   </div>
 
