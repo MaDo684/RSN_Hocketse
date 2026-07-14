@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b2445">
+  <meta name="description" content="Mobile Schulfest-Kasse der Realschule Neuffen">
+  <title>RSN Hocketse Kasse</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Crect width='120' height='120' rx='24' fill='%230b2445'/%3E%3Ctext x='60' y='72' text-anchor='middle' font-family='Arial' font-size='38' font-weight='700' fill='%23d8ad35'%3ERSN%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/style.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script defer src="js/config.js"></script>
+  <script defer src="js/app.js"></script>
+</head>
+<body>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <header class="topbar">
+    <div class="brand-block">
+      <div id="logo-fallback" class="rsn-logo">RSN</div>
+      <img id="school-logo" class="school-logo" alt="Realschule Neuffen Logo" hidden>
+      <div class="brand-text">
+        <div class="eyebrow">Realschule Neuffen</div>
+        <h1>Hocketse-Kasse</h1>
+      </div>
+    </div>
+    <div class="top-actions">
+      <button id="sync-now" class="icon-action" type="button" title="Aktualisieren">↻</button>
+      <button id="admin-open" class="admin-pill" type="button">Admin</button>
+    </div>
+  </header>
+
+  <main class="app-shell">
+    <section class="left-pane">
+      <div class="total-hero">
+        <div>
+          <span>Aktuelle Summe</span>
+          <strong id="total-top">0,00 €</strong>
+        </div>
+        <div id="sync-state" class="sync-badge">Lade Daten…</div>
+      </div>
+
+      <div class="section-head">
+        <h2>Produkte</h2>
+        <span id="product-count">0 Artikel</span>
+      </div>
+      <div id="product-grid" class="product-grid"></div>
+    </section>
+
+    <aside class="cart-pane">
+      <div class="cart-head">
+        <h2>Warenkorb</h2>
+        <button id="cart-clear" type="button" class="text-button">Leeren</button>
+      </div>
+      <div id="cart-list" class="cart-list empty">Noch keine Artikel ausgewählt.</div>
+
+      <div class="pay-total">
+        <span>Zu zahlen</span>
+        <strong id="total-pay">0,00 €</strong>
+      </div>
+
+      <div class="payment-card">
+        <label for="given-input">Gegeben</label>
+        <input id="given-input" type="text" inputmode="decimal" placeholder="z. B. 20,00">
+        <div id="quick-buttons" class="quick-buttons"></div>
+        <div id="change-output" class="change neutral">Rückgeld: 0,00 €</div>
+      </div>
+    </aside>
+  </main>
+
+  <footer class="footer">
+    <strong>Realschule Neuffen</strong><br>
+    Hohenzollernstraße 24 · 72639 Neuffen · 07025 9211-0 · info@rsneuffen.de
+  </footer>
+
+  <div id="admin-overlay" class="overlay" hidden>
+    <section class="admin-panel" role="dialog" aria-modal="true" aria-labelledby="admin-title">
+      <button id="admin-close" class="close-button" type="button" aria-label="Schließen">×</button>
+
+      <div id="login-box" class="login-box">
+        <h2 id="admin-title">Admin-Bereich</h2>
+        <p>Passwort eingeben. Im Code liegt nur der SHA-256-Hash, nicht das Klartext-Passwort.</p>
+        <input id="admin-password" type="password" autocomplete="current-password" placeholder="Passwort">
+        <button id="admin-login" type="button" class="primary-btn full">Einloggen</button>
+        <p id="login-error" class="form-error"></p>
+      </div>
+
+      <div id="admin-content" hidden>
+        <h2>Produktverwaltung</h2>
+        <p class="hint-box">Änderungen werden in Supabase gespeichert und automatisch auf den anderen Kassen geladen. Bitte keine personenbezogenen Daten speichern.</p>
+
+        <div class="sort-row">
+          <button id="sort-name" type="button">Name A–Z</button>
+          <button id="sort-price-up" type="button">Preis ↑</button>
+          <button id="sort-price-down" type="button">Preis ↓</button>
+          <button id="reload-admin" type="button">Neu laden</button>
+        </div>
+
+        <div id="admin-products" class="admin-products"></div>
+
+        <div class="new-card">
+          <h3>Neues Produkt</h3>
+          <div class="new-grid">
+            <button id="new-icon" type="button" class="icon-pick">🍰</button>
+            <input id="new-name" type="text" placeholder="Name">
+            <input id="new-price" type="text" inputmode="decimal" placeholder="Preis">
+            <button id="add-product" type="button" class="primary-btn">Hinzufügen</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div id="icon-overlay" class="overlay" hidden>
+    <section class="icon-panel" role="dialog" aria-modal="true" aria-labelledby="icon-title">
+      <button id="icon-close" class="close-button" type="button" aria-label="Schließen">×</button>
+      <h2 id="icon-title">Icon auswählen</h2>
+      <div id="icon-grid" class="icon-grid"></div>
+      <div class="upload-box">
+        <label for="icon-upload">Eigenes Bild hochladen</label>
+        <input id="icon-upload" type="file" accept="image/*">
+        <p>Eigene Bilder werden auf 128 × 128 px verkleinert. Sobald sie einem Produkt zugewiesen sind, werden sie über Supabase mitgespeichert.</p>
+      </div>
+      <h3>Eigene Icons</h3>
+      <div id="custom-icon-grid" class="icon-grid"></div>
+    </section>
+  </div>
+</body>
+</html>
