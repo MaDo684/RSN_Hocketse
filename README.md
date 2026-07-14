@@ -1,76 +1,105 @@
-# 🎉 Schulfest-Kasse — Realschule Neuffen
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b2341" />
+  <title>Schulfest-Kasse | Realschule Neuffen</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script defer src="js/config.js"></script>
+  <script defer src="js/app.js"></script>
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand">
+      <img id="school-logo" class="school-logo" alt="Logo Realschule Neuffen" />
+      <div>
+        <h1>Schulfest-Kasse</h1>
+        <p>Realschule Neuffen</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button id="refresh-cloud" class="ghost" title="Daten aus Supabase aktualisieren">🔄</button>
+      <button id="open-admin" class="secondary">Admin</button>
+    </div>
+  </header>
 
-Eine einfache, mobil nutzbare Kassen-App für Schulfeste. Läuft direkt im
-Browser (auch auf dem Handy), keine Installation nötig.
+  <main class="layout">
+    <section class="sales-panel">
+      <div class="total-sticky">
+        <span>Gesamt</span>
+        <strong id="total-top">0,00 €</strong>
+      </div>
+      <div class="section-title">
+        <h2>Produkte</h2>
+        <span id="sync-status" class="status">Lade ...</span>
+      </div>
+      <div id="products-grid" class="products-grid" aria-live="polite"></div>
+    </section>
 
-## Funktionen
+    <aside class="cart-panel">
+      <h2>Warenkorb</h2>
+      <div id="cart-items" class="cart-items empty">Noch keine Artikel ausgewählt.</div>
+      <div class="cart-total cart-total-large">
+        <span>Gesamtsumme</span><strong id="total-payment">0,00 €</strong>
+      </div>
+      <section class="payment-box">
+        <label for="given-input">Gegeben</label>
+        <input id="given-input" inputmode="decimal" type="text" placeholder="z. B. 20,00" />
+        <div id="quick-amounts" class="quick-amounts"></div>
+        <div id="change-result" class="change neutral">Rückgeld: 0,00 €</div>
+      </section>
+      <button id="clear-cart" class="danger wide">Warenkorb leeren</button>
+    </aside>
+  </main>
 
-- Produkte per Fingertipp in den Warenkorb legen
-- Automatische Rückgeld-Berechnung mit Schnellauswahl-Beträgen
-- Passwortgeschützter Admin-Bereich (Passwort ist **nicht** im Klartext
-  gespeichert, sondern nur als SHA-256-Hash im Code hinterlegt)
-- Im Admin-Bereich: Preise/Namen ändern, Produkte löschen, neue Produkte
-  mit auswählbarem Symbol aus einem Icon-Repository anlegen
-- Layout angelehnt an realschule-neuffen.de (Farben, Logo, Kontaktdaten)
+  <footer class="footer">
+    <strong>Realschule Neuffen</strong> · Hohenzollernstraße 24 · 72639 Neuffen · 07025 9211-0 · info@rsneuffen.de
+  </footer>
 
-## Wichtiger Hinweis zur Datenspeicherung
+  <dialog id="admin-dialog" class="modal">
+    <form method="dialog" class="modal-card admin-card">
+      <button class="modal-close" value="close" aria-label="Schließen">×</button>
+      <div id="admin-login">
+        <h2>Admin-Bereich</h2>
+        <p>Bitte Admin-Passwort eingeben. Das Passwort liegt nicht im Klartext im Code.</p>
+        <input id="admin-password" type="password" autocomplete="current-password" placeholder="Passwort" />
+        <button id="admin-login-btn" type="button" class="primary wide">Einloggen</button>
+        <p id="login-error" class="error"></p>
+      </div>
+      <div id="admin-content" hidden>
+        <h2>Produktverwaltung</h2>
+        <p id="sync-explainer" class="hint"></p>
+        <div class="admin-actions">
+          <button id="sort-name" type="button">Name A–Z</button>
+          <button id="sort-price-asc" type="button">Preis ↑</button>
+          <button id="sort-price-desc" type="button">Preis ↓</button>
+          <button id="reset-products" type="button" class="danger">Lokal zurücksetzen</button>
+        </div>
+        <div id="admin-products" class="admin-products"></div>
+        <h3>Neues Produkt</h3>
+        <div class="new-product">
+          <button id="new-icon" class="icon-button" type="button">🍰</button>
+          <input id="new-name" type="text" placeholder="Name" />
+          <input id="new-price" type="text" inputmode="decimal" placeholder="Preis" />
+          <button id="add-product" class="primary" type="button">Hinzufügen</button>
+        </div>
+      </div>
+    </form>
+  </dialog>
 
-Diese App ist eine **rein statische Webseite** (kein Server, keine
-Datenbank). Änderungen, die im Admin-Bereich vorgenommen werden
-(Preise, neue Produkte), werden **nur lokal im Browser des jeweiligen
-Geräts** gespeichert (`localStorage`).
-
-Das bedeutet:
-
-- Auf **einem** Kassen-Handy/Tablet funktioniert das einwandfrei —
-  einmal im Admin-Bereich angepasst, bleiben die Preise auf diesem
-  Gerät erhalten (auch nach Neuladen der Seite).
-- Werden **mehrere Geräte** als Kasse genutzt, müssen die Preise auf
-  jedem Gerät einzeln im Admin-Bereich gepflegt werden, **oder**: im
-  Admin-Bereich auf „Exportieren" tippen, die erzeugte
-  `produkte-export.json` öffnen und die Werte direkt im Code
-  (`js/app.js`, Abschnitt `DEFAULT_PRODUCTS`) eintragen, bevor die
-  Seite z. B. über GitHub Pages neu veröffentlicht wird.
-
-## Veröffentlichung über GitHub Pages (kostenlos, in 5 Minuten)
-
-1. Auf [github.com](https://github.com) ein neues, öffentliches
-   Repository anlegen (z. B. `schulfest-kasse`).
-2. Alle Dateien aus diesem Ordner (`index.html`, `css/`, `js/`,
-   `README.md`) in das Repository hochladen (per Drag & Drop im
-   Browser über „Add file → Upload files", oder per `git push`).
-3. Im Repository auf **Settings → Pages**.
-4. Unter „Build and deployment" → „Source" die Option **„Deploy from a
-   branch"** wählen, als Branch **`main`** und Ordner **`/ (root)`**
-   auswählen, dann **Save**.
-5. Nach ca. 1 Minute ist die Seite erreichbar unter:
-   `https://<dein-github-name>.github.io/schulfest-kasse/`
-6. Diesen Link auf dem Kassen-Handy öffnen und zum Homescreen
-   hinzufügen (Browser-Menü → „Zum Home-Bildschirm hinzufügen") — dann
-   startet die App wie eine normale App per Klick auf das Icon.
-
-## Admin-Zugang
-
-Auf das ⚙️-Symbol oben rechts tippen und das Passwort eingeben, das
-euch mitgeteilt wurde. Der Zugang bleibt für die Dauer der
-Browser-Sitzung gespeichert (kein erneutes Eintippen nötig, solange
-der Tab/Browser nicht komplett geschlossen wird).
-
-## Projektstruktur
-
-```
-schulfest-kasse/
-├── index.html      Hauptseite (Kasse + Admin-Bereich)
-├── css/
-│   └── style.css   Layout im Realschule-Neuffen-Design
-├── js/
-│   └── app.js       Kassenlogik, Admin-Logik, Passwort-Hash
-└── README.md
-```
-
-## Passwort ändern
-
-Falls das Admin-Passwort geändert werden soll: Einen neuen SHA-256-Hash
-erzeugen (z. B. über eine Kommandozeile:
-`echo -n "NeuesPasswort" | sha256sum`) und den Wert in `js/app.js` in
-der Zeile `ADMIN_PASSWORD_HASH = "..."` ersetzen.
+  <dialog id="icon-dialog" class="modal">
+    <form method="dialog" class="modal-card icon-card">
+      <button class="modal-close" value="close" aria-label="Schließen">×</button>
+      <h2>Icon auswählen</h2>
+      <h3>Schulfest-Icons</h3>
+      <div id="builtin-icons" class="icon-grid"></div>
+      <h3>Eigene Icons</h3>
+      <p class="small-note">Eigene Icons werden lokal gespeichert. Sobald ein eigenes Icon einem Produkt zugewiesen wird, wird es mit diesem Produkt nach Supabase synchronisiert.</p>
+      <div class="upload-row"><input id="icon-upload" type="file" accept="image/*" /></div>
+      <div id="custom-icons" class="icon-grid custom-icons"></div>
+    </form>
+  </dialog>
+</body>
+</html>

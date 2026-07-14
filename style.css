@@ -1,0 +1,96 @@
+# Schulfest-Kasse Realschule Neuffen - Supabase-Version
+
+Diese Version ist für GitHub Pages vorbereitet und nutzt Supabase als zentrale Datenquelle für die Produkttabelle `products`.
+
+## Enthaltene Dateien
+
+```text
+schulfest-kasse-supabase/
+├── index.html
+├── css/style.css
+├── js/config.js
+├── js/app.js
+└── README.md
+```
+
+## Supabase-Konfiguration
+
+Die Konfiguration steht in `js/config.js`:
+
+```js
+window.SUPABASE_CONFIG = {
+  enabled: true,
+  url: 'https://dfwsnylpqnqbagrgvgvj.supabase.co',
+  publishableKey: 'sb_publishable_XtnMpx7T6Zg8koEGkZ4U3A_nUm-344Y',
+  table: 'products',
+  pollIntervalSeconds: 20
+};
+```
+
+Die App erwartet die bestehende Tabellenstruktur:
+
+```sql
+products
+---------
+id uuid primary key
+name text
+price numeric(10,2)
+icon text
+sort_order integer
+updated_at timestamptz
+```
+
+## Wichtig: Policies / Rechte
+
+Damit Lesen und Schreiben aus der statischen GitHub-Pages-App funktioniert, müssen in Supabase passende Policies vorhanden sein.
+
+Beispiel für den Schulfest-Einsatz:
+
+```sql
+alter table products enable row level security;
+
+create policy "public read"
+on products
+for select
+using (true);
+
+create policy "public write"
+on products
+for all
+using (true)
+with check (true);
+```
+
+Hinweis: Das ist pragmatisch für Produktdaten eines Schulfests. Es ist kein Modell für sensible oder personenbezogene Daten, weil der Publishable Key im Frontend sichtbar ist.
+
+## Was wird synchronisiert?
+
+- Produktname
+- Preis
+- Icon
+- Sortierung
+- Löschen und Neuanlegen von Produkten
+
+Eigene hochgeladene Icons werden lokal im Browser gespeichert. Sobald ein eigenes Icon einem Produkt zugewiesen wird, steht es als Data-URL im Feld `icon` und wird dadurch mit diesem Produkt über Supabase synchronisiert.
+
+## Admin-Zugang
+
+Das Passwort liegt nicht im Klartext im Code. In `js/config.js` steht nur der SHA-256-Hash von:
+
+```text
+FV_RSN2025
+```
+
+## GitHub Pages Upload
+
+1. Den Inhalt dieses Ordners in dein GitHub Repository kopieren.
+2. In GitHub unter `Settings > Pages` GitHub Pages aktivieren.
+3. Branch `main` und Root-Verzeichnis auswählen.
+4. App im Browser öffnen.
+
+## Betrieb am Schulfest
+
+- Auf jedem Kassen-Gerät dieselbe GitHub-Pages-URL öffnen.
+- Änderungen im Admin-Bereich werden nach Supabase geschrieben.
+- Andere Geräte aktualisieren automatisch im eingestellten Intervall.
+- Mit dem 🔄 Button kann ein Gerät manuell aktualisiert werden.
