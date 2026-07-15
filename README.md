@@ -36,3 +36,7 @@ alter table products enable row level security;
 create policy "public read" on products for select using (true);
 create policy "public write" on products for all using (true) with check (true);
 ```
+
+
+## Version 2.2
+Der Schliessen-Button hat jetzt einen direkten Inline-Fallback und funktioniert auch dann, wenn ein gecachtes JavaScript oder ein Event-Listener stoert. CSS und JavaScript werden mit `?v=22` cache-frei geladen.
