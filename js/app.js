@@ -1,22 +1,24 @@
 'use strict';
 
-const BUILTIN_ICONS = ['🌭','🥨','🍰','🧁','🍪','🥧','🧇','🍩','🍿','🍟','🍕','🥪','🥙','🍔','🥗','🍎','🍌','🍓','🍉','🍇','🥤','🧃','💧','☕','🍵','🧋','🍬','🍫','🍭','🍦','🍨','🥜','🧀','🥖','🍞','🥐','🧈','🍯','🎟️','🎈','🎉','🎯','🏆','⚽','🏀','🎲','🧸','📚','✏️','🎨','🎵','🎤','🎁','💐'];
+const BUILTIN_ICONS = ['\uD83C\uDF2D','\uD83E\uDD68','\uD83C\uDF70','\uD83E\uDDC1','\uD83C\uDF6A','\uD83E\uDD50','\uD83E\uDDC7','\uD83C\uDF69','\uD83C\uDF7F','\uD83C\uDF5F','\uD83C\uDF55','\uD83E\uDD6A','\uD83E\uDDC6','\uD83C\uDF54','\uD83E\uDD57','\uD83C\uDF4E','\uD83C\uDF4C','\uD83C\uDF53','\uD83C\uDF49','\uD83C\uDF47','\uD83E\uDD64','\uD83E\uDDC3','\uD83D\uDCA7','\u2615','\uD83C\uDF75','\uD83E\uDDCB','\uD83C\uDF6C','\uD83C\uDF6D','\uD83C\uDF6B','\uD83C\uDF66','\uD83C\uDF68','\uD83E\uDD5B','\uD83E\uDDC0','\uD83E\uDD56','\uD83C\uDF5E','\uD83E\uDD53','\uD83E\uDDC8','\uD83C\uDF6F','\uD83C\uDF9F','\uD83C\uDF88','\uD83C\uDF89','\uD83C\uDFAF','\uD83C\uDFC6','\u26BD','\uD83C\uDFC0','\uD83C\uDFB2','\uD83E\uDDF8','\uD83D\uDCDA','\u270F','\uD83C\uDFA8','\uD83C\uDFB5','\uD83C\uDFA4','\uD83C\uDF81','\uD83D\uDC90'];
+
 const DEFAULT_PRODUCTS = [
-  { id: crypto.randomUUID(), name: 'Rote Wurst', price: 3.50, icon: '🌭', sort_order: 1 },
-  { id: crypto.randomUUID(), name: 'Brezel', price: 1.50, icon: '🥨', sort_order: 2 },
-  { id: crypto.randomUUID(), name: 'Kuchen', price: 2.00, icon: '🍰', sort_order: 3 },
-  { id: crypto.randomUUID(), name: 'Waffel', price: 2.50, icon: '🧇', sort_order: 4 },
-  { id: crypto.randomUUID(), name: 'Getränk', price: 2.00, icon: '🥤', sort_order: 5 }
+  { id: crypto.randomUUID(), name: 'Rote Wurst', price: 3.50, icon: '\uD83C\uDF2D', sort_order: 1 },
+  { id: crypto.randomUUID(), name: 'Brezel', price: 1.50, icon: '\uD83E\uDD68', sort_order: 2 },
+  { id: crypto.randomUUID(), name: 'Kuchen', price: 2.00, icon: '\uD83C\uDF70', sort_order: 3 },
+  { id: crypto.randomUUID(), name: 'Waffel', price: 2.50, icon: '\uD83E\uDDC7', sort_order: 4 },
+  { id: crypto.randomUUID(), name: 'Getr\u00e4nk', price: 2.00, icon: '\uD83E\uDD64', sort_order: 5 }
 ];
-const STORAGE_PRODUCTS = 'rsn_hocketse_v2_products';
-const STORAGE_CUSTOM_ICONS = 'rsn_hocketse_v2_custom_icons';
+
+const STORAGE_PRODUCTS = 'rsn_hocketse_v21_products';
+const STORAGE_CUSTOM_ICONS = 'rsn_hocketse_v21_custom_icons';
 
 let products = [];
 let customIcons = [];
 let cart = new Map();
 let db = null;
 let selectedIconTarget = null;
-let selectedNewIcon = '🍰';
+let selectedNewIcon = '\uD83C\uDF70';
 let lastSignature = '';
 let toastTimer = null;
 
@@ -24,36 +26,39 @@ const $ = (id) => document.getElementById(id);
 const money = (n) => new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(Number(n || 0));
 const parseMoney = (v) => Number(String(v || '').replace(',', '.').replace(/[^0-9.]/g, '')) || 0;
 const isDataIcon = (icon) => typeof icon === 'string' && icon.startsWith('data:image/');
-const iconMarkup = (icon) => isDataIcon(icon) ? `<img src="${icon}" alt="Eigenes Icon">` : String(icon || '🧾');
+const iconMarkup = (icon) => isDataIcon(icon) ? ('<img src="' + icon + '" alt="">') : String(icon || '\uD83E\uDDFE');
 const total = () => [...cart.values()].reduce((s, i) => s + i.price * i.qty, 0);
-const normalize = (p, i = 0) => ({
+const normalize = (p, i) => ({
   id: p.id || crypto.randomUUID(),
   name: String(p.name || '').trim() || 'Produkt',
   price: Number(p.price || 0),
-  icon: p.icon || '🧾',
-  sort_order: Number(p.sort_order ?? i + 1),
+  icon: p.icon || '\uD83E\uDDFE',
+  sort_order: Number(p.sort_order != null ? p.sort_order : (i || 0) + 1),
   updated_at: p.updated_at || null
 });
 const signature = (rows) => JSON.stringify(rows.map(p => [p.id, p.name, Number(p.price), p.icon, Number(p.sort_order)]));
 
 function showToast(text) {
   const el = $('toast');
+  if (!el) return;
   el.textContent = text;
   el.classList.add('show');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
 }
-function setSync(text, kind = '') {
+function setSync(text, kind) {
   const el = $('sync-state');
+  if (!el) return;
   el.textContent = text;
-  el.className = `sync-badge ${kind}`.trim();
+  el.className = 'sync-badge' + (kind ? ' ' + kind : '');
 }
 function setupLogo() {
   if (!APP_CONFIG.logoUrl) return;
   const img = $('school-logo');
-  const fallback = $('logo-fallback');
-  img.onload = () => { img.hidden = false; fallback.hidden = true; };
-  img.onerror = () => { img.hidden = true; fallback.hidden = false; };
+  const fb = $('logo-fallback');
+  if (!img || !fb) return;
+  img.onload = () => { img.hidden = false; fb.hidden = true; };
+  img.onerror = () => { img.hidden = true; fb.hidden = false; };
   img.src = APP_CONFIG.logoUrl;
 }
 function localLoad() {
@@ -87,11 +92,10 @@ async function saveCloud() {
     id: p.id,
     name: p.name,
     price: Number(p.price || 0),
-    icon: p.icon || '🧾',
+    icon: p.icon || '\uD83E\uDDFE',
     sort_order: idx + 1,
     updated_at: new Date().toISOString()
   }));
-
   const { data: remote, error: readError } = await db.from(SUPABASE_CONFIG.table).select('id');
   if (readError) throw readError;
   const localIds = rows.map(r => r.id);
@@ -106,20 +110,20 @@ async function saveCloud() {
   }
   lastSignature = signature(rows.map(normalize));
 }
-async function persistProducts(message = 'Gespeichert') {
-  products = products.map((p, idx) => ({ ...normalize(p, idx), sort_order: idx + 1 }));
+async function persistProducts(message) {
+  products = products.map((p, idx) => Object.assign(normalize(p, idx), { sort_order: idx + 1 }));
   localSave();
   renderAll();
   if (!SUPABASE_CONFIG.enabled) { setSync('Lokal', 'warn'); return; }
   try {
-    setSync('Speichere…', 'warn');
+    setSync('Speichere...', 'warn');
     await saveCloud();
     setSync('Synchronisiert', 'ok');
-    showToast(message);
+    if (message) showToast(message);
   } catch (err) {
     console.error(err);
     setSync('Supabase-Fehler', 'warn');
-    showToast('Speichern lokal erfolgt, Cloudfehler');
+    showToast('Lokal gespeichert, Cloud-Fehler');
   }
 }
 async function initialLoad() {
@@ -127,7 +131,7 @@ async function initialLoad() {
   renderAll();
   if (!SUPABASE_CONFIG.enabled) { setSync('Lokal', 'warn'); return; }
   try {
-    setSync('Lade Supabase…', 'warn');
+    setSync('Lade Supabase...', 'warn');
     const cloud = await loadCloud();
     if (cloud && cloud.length) {
       products = cloud;
@@ -144,7 +148,8 @@ async function initialLoad() {
   }
 }
 async function pollCloud() {
-  if ($('admin-overlay').hidden === false) return;
+  const adminEl = $('admin-overlay');
+  if (adminEl && adminEl.hidden === false) return;
   try {
     const cloud = await loadCloud();
     if (!cloud) return;
@@ -166,27 +171,36 @@ function reconcileCart() {
   for (const [id, item] of cart) {
     const p = products.find(x => x.id === id);
     if (!p) cart.delete(id);
-    else cart.set(id, { ...item, name: p.name, price: p.price, icon: p.icon });
+    else cart.set(id, Object.assign({}, item, { name: p.name, price: p.price, icon: p.icon }));
   }
 }
 function renderAll() {
   renderProducts();
   renderCart();
-  renderAdminProducts();
+  const adminContent = $('admin-content');
+  if (adminContent && !adminContent.hidden) renderAdminProducts();
 }
 function renderProducts() {
   const grid = $('product-grid');
+  if (!grid) return;
   grid.innerHTML = '';
-  $('product-count').textContent = `${products.length} Artikel`;
+  $('product-count').textContent = products.length + ' Artikel';
   products.forEach(p => {
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'product-card';
-    btn.innerHTML = `
-      <span class="product-icon">${iconMarkup(p.icon)}</span>
-      <span class="product-name"></span>
-      <span class="product-price">${money(p.price)}</span>`;
-    btn.querySelector('.product-name').textContent = p.name;
+    const iconSpan = document.createElement('span');
+    iconSpan.className = 'product-icon';
+    iconSpan.innerHTML = iconMarkup(p.icon);
+    const nameSpan = document.createElement('span');
+    nameSpan.className = 'product-name';
+    nameSpan.textContent = p.name;
+    const priceSpan = document.createElement('span');
+    priceSpan.className = 'product-price';
+    priceSpan.textContent = money(p.price);
+    btn.appendChild(iconSpan);
+    btn.appendChild(nameSpan);
+    btn.appendChild(priceSpan);
     btn.addEventListener('click', () => addToCart(p.id));
     grid.appendChild(btn);
   });
@@ -194,7 +208,7 @@ function renderProducts() {
 function addToCart(id) {
   const p = products.find(x => x.id === id);
   if (!p) return;
-  const item = cart.get(id) || { ...p, qty: 0 };
+  const item = cart.get(id) || Object.assign({}, p, { qty: 0 });
   item.qty += 1;
   item.name = p.name;
   item.price = p.price;
@@ -212,29 +226,42 @@ function changeQty(id, diff) {
 }
 function renderCart() {
   const list = $('cart-list');
+  if (!list) return;
   list.innerHTML = '';
   if (cart.size === 0) {
     list.className = 'cart-list empty';
-    list.textContent = 'Noch keine Artikel ausgewählt.';
+    list.textContent = 'Noch keine Artikel ausgew\u00e4hlt.';
   } else {
     list.className = 'cart-list';
     [...cart.values()].forEach(item => {
       const row = document.createElement('div');
       row.className = 'cart-row';
-      row.innerHTML = `
-        <div>
-          <div class="cart-title"></div>
-          <div class="cart-sub">${money(item.price)} × ${item.qty} = ${money(item.price * item.qty)}</div>
-        </div>
-        <div class="qty">
-          <button type="button" aria-label="Menge reduzieren">−</button>
-          <strong>${item.qty}</strong>
-          <button type="button" aria-label="Menge erhöhen">+</button>
-        </div>`;
-      row.querySelector('.cart-title').textContent = item.name;
-      const buttons = row.querySelectorAll('button');
-      buttons[0].addEventListener('click', () => changeQty(item.id, -1));
-      buttons[1].addEventListener('click', () => changeQty(item.id, 1));
+      const info = document.createElement('div');
+      const title = document.createElement('div');
+      title.className = 'cart-title';
+      title.textContent = item.name;
+      const sub = document.createElement('div');
+      sub.className = 'cart-sub';
+      sub.textContent = money(item.price) + ' \u00d7 ' + item.qty + ' = ' + money(item.price * item.qty);
+      info.appendChild(title);
+      info.appendChild(sub);
+      const qty = document.createElement('div');
+      qty.className = 'qty';
+      const minus = document.createElement('button');
+      minus.type = 'button';
+      minus.textContent = '\u2212';
+      minus.addEventListener('click', () => changeQty(item.id, -1));
+      const num = document.createElement('strong');
+      num.textContent = item.qty;
+      const plus = document.createElement('button');
+      plus.type = 'button';
+      plus.textContent = '+';
+      plus.addEventListener('click', () => changeQty(item.id, 1));
+      qty.appendChild(minus);
+      qty.appendChild(num);
+      qty.appendChild(plus);
+      row.appendChild(info);
+      row.appendChild(qty);
       list.appendChild(row);
     });
   }
@@ -246,9 +273,10 @@ function renderCart() {
 }
 function renderQuickPay(t) {
   const box = $('quick-buttons');
+  if (!box) return;
   box.innerHTML = '';
   if (t <= 0) return;
-  const values = Array.from(new Set([Math.ceil(t), Math.ceil(t / 5) * 5, Math.ceil(t / 10) * 10, Math.ceil(t / 20) * 20])).filter(v => v >= t);
+  const values = Array.from(new Set([Math.ceil(t), Math.ceil(t/5)*5, Math.ceil(t/10)*10, Math.ceil(t/20)*20])).filter(v => v >= t);
   values.slice(0, 4).forEach(v => {
     const b = document.createElement('button');
     b.type = 'button';
@@ -258,16 +286,17 @@ function renderQuickPay(t) {
   });
 }
 function renderChange() {
-  const diff = parseMoney($('given-input').value) - total();
   const el = $('change-output');
+  if (!el) return;
+  const diff = parseMoney($('given-input').value) - total();
   if (total() <= 0) {
-    el.textContent = 'Rückgeld: 0,00 €';
+    el.textContent = 'R\u00fcckgeld: 0,00 \u20ac';
     el.className = 'change neutral';
   } else if (diff >= 0) {
-    el.textContent = `Rückgeld: ${money(diff)}`;
+    el.textContent = 'R\u00fcckgeld: ' + money(diff);
     el.className = 'change ok';
   } else {
-    el.textContent = `Zu wenig: ${money(Math.abs(diff))}`;
+    el.textContent = 'Zu wenig: ' + money(Math.abs(diff));
     el.className = 'change bad';
   }
 }
@@ -286,14 +315,34 @@ async function loginAdmin() {
     $('login-error').textContent = 'Passwort ist nicht korrekt.';
   }
 }
+
 function openAdmin() {
-  $('admin-overlay').hidden = false;
-  $('admin-password').focus();
+  const el = $('admin-overlay');
+  el.hidden = false;
+  el.style.display = 'grid';
+  const pw = $('admin-password');
+  if (pw) setTimeout(() => pw.focus(), 50);
 }
 function closeAdmin() {
-  $('admin-overlay').hidden = true;
-  $('admin-password').value = '';
+  const el = $('admin-overlay');
+  el.hidden = true;
+  el.style.display = 'none';
+  const pw = $('admin-password');
+  if (pw) pw.value = '';
 }
+function openIconPicker(target) {
+  selectedIconTarget = target;
+  renderIconPicker();
+  const el = $('icon-overlay');
+  el.hidden = false;
+  el.style.display = 'grid';
+}
+function closeIconPicker() {
+  const el = $('icon-overlay');
+  el.hidden = true;
+  el.style.display = 'none';
+}
+
 function renderAdminProducts() {
   const wrap = $('admin-products');
   if (!wrap) return;
@@ -301,23 +350,55 @@ function renderAdminProducts() {
   products.forEach((p, idx) => {
     const row = document.createElement('div');
     row.className = 'admin-row';
-    row.innerHTML = `
-      <button class="admin-icon" type="button">${iconMarkup(p.icon)}</button>
-      <input class="adm-name" type="text" aria-label="Produktname">
-      <input class="adm-price" type="text" inputmode="decimal" aria-label="Preis">
-      <button class="small-btn admin-move up" type="button">▲</button>
-      <button class="small-btn admin-move down" type="button">▼</button>
-      <button class="danger-btn delete-product" type="button">Löschen</button>`;
-    row.querySelector('.adm-name').value = p.name;
-    row.querySelector('.adm-price').value = String(p.price.toFixed(2)).replace('.', ',');
-    row.querySelector('.admin-icon').addEventListener('click', () => openIconPicker({ type: 'product', id: p.id }));
-    row.querySelector('.adm-name').addEventListener('change', async e => { p.name = e.target.value.trim() || p.name; await persistProducts('Produkt geändert'); });
-    row.querySelector('.adm-price').addEventListener('change', async e => { p.price = parseMoney(e.target.value); await persistProducts('Preis geändert'); });
-    row.querySelector('.up').disabled = idx === 0;
-    row.querySelector('.down').disabled = idx === products.length - 1;
-    row.querySelector('.up').addEventListener('click', async () => { [products[idx - 1], products[idx]] = [products[idx], products[idx - 1]]; await persistProducts('Sortierung geändert'); });
-    row.querySelector('.down').addEventListener('click', async () => { [products[idx + 1], products[idx]] = [products[idx], products[idx + 1]]; await persistProducts('Sortierung geändert'); });
-    row.querySelector('.delete-product').addEventListener('click', async () => { products = products.filter(x => x.id !== p.id); cart.delete(p.id); await persistProducts('Produkt gelöscht'); });
+
+    const iconBtn = document.createElement('button');
+    iconBtn.type = 'button';
+    iconBtn.className = 'admin-icon';
+    iconBtn.innerHTML = iconMarkup(p.icon);
+    iconBtn.addEventListener('click', () => openIconPicker({ type: 'product', id: p.id }));
+
+    const nameInp = document.createElement('input');
+    nameInp.type = 'text';
+    nameInp.value = p.name;
+    nameInp.addEventListener('change', async (e) => { p.name = e.target.value.trim() || p.name; await persistProducts('Name ge\u00e4ndert'); });
+
+    const priceInp = document.createElement('input');
+    priceInp.type = 'text';
+    priceInp.inputMode = 'decimal';
+    priceInp.value = p.price.toFixed(2).replace('.', ',');
+    priceInp.addEventListener('change', async (e) => { p.price = parseMoney(e.target.value); await persistProducts('Preis ge\u00e4ndert'); });
+
+    const up = document.createElement('button');
+    up.type = 'button';
+    up.className = 'small-btn';
+    up.textContent = '\u25B2';
+    up.disabled = idx === 0;
+    up.addEventListener('click', async () => { const t = products[idx-1]; products[idx-1] = products[idx]; products[idx] = t; await persistProducts('Sortiert'); });
+
+    const down = document.createElement('button');
+    down.type = 'button';
+    down.className = 'small-btn';
+    down.textContent = '\u25BC';
+    down.disabled = idx === products.length - 1;
+    down.addEventListener('click', async () => { const t = products[idx+1]; products[idx+1] = products[idx]; products[idx] = t; await persistProducts('Sortiert'); });
+
+    const del = document.createElement('button');
+    del.type = 'button';
+    del.className = 'danger-btn';
+    del.textContent = 'L\u00f6schen';
+    del.addEventListener('click', async () => {
+      if (!confirm('Produkt "' + p.name + '" wirklich l\u00f6schen?')) return;
+      products = products.filter(x => x.id !== p.id);
+      cart.delete(p.id);
+      await persistProducts('Produkt gel\u00f6scht');
+    });
+
+    row.appendChild(iconBtn);
+    row.appendChild(nameInp);
+    row.appendChild(priceInp);
+    row.appendChild(up);
+    row.appendChild(down);
+    row.appendChild(del);
     wrap.appendChild(row);
   });
 }
@@ -325,26 +406,29 @@ function sortProducts(mode) {
   if (mode === 'name') products.sort((a,b) => a.name.localeCompare(b.name, 'de'));
   if (mode === 'price-up') products.sort((a,b) => a.price - b.price);
   if (mode === 'price-down') products.sort((a,b) => b.price - a.price);
-  persistProducts('Sortierung geändert');
+  persistProducts('Sortiert');
 }
-function openIconPicker(target) {
-  selectedIconTarget = target;
-  renderIconPicker();
-  $('icon-overlay').hidden = false;
-}
-function closeIconPicker() { $('icon-overlay').hidden = true; }
 function allCustomIcons() {
-  return Array.from(new Set([...customIcons, ...products.map(p => p.icon).filter(isDataIcon)]));
+  const fromProducts = products.map(p => p.icon).filter(isDataIcon);
+  return Array.from(new Set([...customIcons, ...fromProducts]));
 }
 function renderIconPicker() {
   const g = $('icon-grid');
+  if (!g) return;
   g.innerHTML = '';
   BUILTIN_ICONS.forEach(icon => g.appendChild(iconButton(icon)));
   const cg = $('custom-icon-grid');
+  if (!cg) return;
   cg.innerHTML = '';
   const custom = allCustomIcons();
-  if (!custom.length) cg.textContent = 'Noch keine eigenen Icons vorhanden.';
-  custom.forEach(icon => cg.appendChild(iconButton(icon)));
+  if (!custom.length) {
+    const note = document.createElement('p');
+    note.style.color = '#66758a';
+    note.textContent = 'Noch keine eigenen Icons vorhanden.';
+    cg.appendChild(note);
+  } else {
+    custom.forEach(icon => cg.appendChild(iconButton(icon)));
+  }
 }
 function iconButton(icon) {
   const b = document.createElement('button');
@@ -355,15 +439,16 @@ function iconButton(icon) {
   return b;
 }
 async function chooseIcon(icon) {
-  if (!selectedIconTarget) return;
+  if (!selectedIconTarget) { closeIconPicker(); return; }
   if (selectedIconTarget.type === 'new') {
     selectedNewIcon = icon;
-    $('new-icon').innerHTML = iconMarkup(icon);
+    const btn = $('new-icon');
+    if (btn) btn.innerHTML = iconMarkup(icon);
   } else {
     const p = products.find(x => x.id === selectedIconTarget.id);
     if (p) {
       p.icon = icon;
-      await persistProducts('Icon geändert');
+      await persistProducts('Icon ge\u00e4ndert');
     }
   }
   closeIconPicker();
@@ -393,28 +478,32 @@ function wireEvents() {
   $('sync-now').addEventListener('click', async () => { await pollCloud(); showToast('Aktualisiert'); });
   $('given-input').addEventListener('input', renderChange);
   $('cart-clear').addEventListener('click', () => { cart.clear(); $('given-input').value = ''; renderCart(); });
+
   $('admin-open').addEventListener('click', openAdmin);
   $('admin-close').addEventListener('click', closeAdmin);
   $('admin-login').addEventListener('click', loginAdmin);
-  $('admin-password').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); loginAdmin(); } });
+  $('admin-password').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); loginAdmin(); } });
+
   $('sort-name').addEventListener('click', () => sortProducts('name'));
   $('sort-price-up').addEventListener('click', () => sortProducts('price-up'));
   $('sort-price-down').addEventListener('click', () => sortProducts('price-down'));
   $('reload-admin').addEventListener('click', async () => { await pollCloud(); renderAdminProducts(); });
+
   $('new-icon').addEventListener('click', () => openIconPicker({ type: 'new' }));
   $('add-product').addEventListener('click', async () => {
     const name = $('new-name').value.trim();
     const price = parseMoney($('new-price').value);
     if (!name || price <= 0) { showToast('Bitte Name und Preis eingeben'); return; }
-    products.push({ id: crypto.randomUUID(), name, price, icon: selectedNewIcon, sort_order: products.length + 1 });
+    products.push({ id: crypto.randomUUID(), name: name, price: price, icon: selectedNewIcon, sort_order: products.length + 1 });
     $('new-name').value = '';
     $('new-price').value = '';
-    selectedNewIcon = '🍰';
-    $('new-icon').textContent = '🍰';
-    await persistProducts('Produkt hinzugefügt');
+    selectedNewIcon = '\uD83C\uDF70';
+    $('new-icon').textContent = '\uD83C\uDF70';
+    await persistProducts('Produkt hinzugef\u00fcgt');
   });
+
   $('icon-close').addEventListener('click', closeIconPicker);
-  $('icon-upload').addEventListener('change', async e => {
+  $('icon-upload').addEventListener('change', async (e) => {
     const file = e.target.files && e.target.files[0];
     if (!file) return;
     try {
@@ -429,18 +518,31 @@ function wireEvents() {
     }
     e.target.value = '';
   });
-  document.addEventListener('keydown', e => {
+
+  document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
-      if (!$('icon-overlay').hidden) closeIconPicker();
-      else if (!$('admin-overlay').hidden) closeAdmin();
+      const iconO = $('icon-overlay');
+      const adminO = $('admin-overlay');
+      if (iconO && !iconO.hidden) { closeIconPicker(); return; }
+      if (adminO && !adminO.hidden) { closeAdmin(); return; }
     }
   });
 }
 async function boot() {
   setupLogo();
+
+  const iconO = $('icon-overlay');
+  iconO.hidden = true;
+  iconO.style.display = 'none';
+  const adminO = $('admin-overlay');
+  adminO.hidden = true;
+  adminO.style.display = 'none';
+
+  iconO.addEventListener('click', (e) => { if (e.target === iconO) closeIconPicker(); });
+  adminO.addEventListener('click', (e) => { if (e.target === adminO) closeAdmin(); });
+
   wireEvents();
   await initialLoad();
   setInterval(pollCloud, Math.max(5, SUPABASE_CONFIG.pollIntervalSeconds || 15) * 1000);
 }
-
 document.addEventListener('DOMContentLoaded', boot);
