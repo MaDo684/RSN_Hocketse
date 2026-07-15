@@ -1,17 +1,30 @@
 'use strict';
 
-const BUILTIN_ICONS = ['\uD83C\uDF2D','\uD83E\uDD68','\uD83C\uDF70','\uD83E\uDDC1','\uD83C\uDF6A','\uD83E\uDD50','\uD83E\uDDC7','\uD83C\uDF69','\uD83C\uDF7F','\uD83C\uDF5F','\uD83C\uDF55','\uD83E\uDD6A','\uD83E\uDDC6','\uD83C\uDF54','\uD83E\uDD57','\uD83C\uDF4E','\uD83C\uDF4C','\uD83C\uDF53','\uD83C\uDF49','\uD83C\uDF47','\uD83E\uDD64','\uD83E\uDDC3','\uD83D\uDCA7','\u2615','\uD83C\uDF75','\uD83E\uDDCB','\uD83C\uDF6C','\uD83C\uDF6D','\uD83C\uDF6B','\uD83C\uDF66','\uD83C\uDF68','\uD83E\uDD5B','\uD83E\uDDC0','\uD83E\uDD56','\uD83C\uDF5E','\uD83E\uDD53','\uD83E\uDDC8','\uD83C\uDF6F','\uD83C\uDF9F','\uD83C\uDF88','\uD83C\uDF89','\uD83C\uDFAF','\uD83C\uDFC6','\u26BD','\uD83C\uDFC0','\uD83C\uDFB2','\uD83E\uDDF8','\uD83D\uDCDA','\u270F','\uD83C\uDFA8','\uD83C\uDFB5','\uD83C\uDFA4','\uD83C\uDF81','\uD83D\uDC90'];
+const BUILTIN_ICONS = [
+  '\uD83C\uDF2D','\uD83E\uDD69','\uD83C\uDF56','\uD83C\uDF57','\uD83E\uDD53',
+  '\uD83E\uDD68','\uD83C\uDF70','\uD83E\uDDC1','\uD83C\uDF6A','\uD83E\uDD50','\uD83E\uDDC7','\uD83C\uDF69','\uD83C\uDF7F','\uD83C\uDF5E','\uD83E\uDD56',
+  '\uD83C\uDF5F','\uD83C\uDF55','\uD83E\uDD6A','\uD83C\uDF2F','\uD83C\uDF2E','\uD83C\uDF54','\uD83E\uDD57','\uD83C\uDF5B','\uD83C\uDF5C','\uD83C\uDF5A',
+  '\uD83C\uDF4E','\uD83C\uDF4C','\uD83C\uDF53','\uD83C\uDF49','\uD83C\uDF47','\uD83C\uDF52','\uD83C\uDF51','\uD83C\uDF4D',
+  '\uD83E\uDD64','\uD83E\uDDC3','\uD83D\uDCA7','\u2615','\uD83C\uDF75','\uD83E\uDDCB',
+  '\uD83C\uDF7A','\uD83C\uDF7B','\uD83C\uDF77','\uD83E\uDD42','\uD83E\uDD43','\uD83C\uDF78','\uD83C\uDF79','\uD83C\uDF7E','\uD83E\uDDCA',
+  '\uD83E\uDD5B','\uD83E\uDDC0','\uD83E\uDDC8','\uD83C\uDF6F',
+  '\uD83C\uDF6C','\uD83C\uDF6D','\uD83C\uDF6B','\uD83C\uDF66','\uD83C\uDF68',
+  '\uD83C\uDF9F','\uD83C\uDF88','\uD83C\uDF89','\uD83C\uDFAF','\uD83C\uDFC6','\u26BD','\uD83C\uDFC0','\uD83C\uDFB2','\uD83E\uDDF8','\uD83D\uDCDA','\u270F','\uD83C\uDFA8','\uD83C\uDFB5','\uD83C\uDFA4','\uD83C\uDF81','\uD83D\uDC90'
+];
 
 const DEFAULT_PRODUCTS = [
   { id: crypto.randomUUID(), name: 'Rote Wurst', price: 3.50, icon: '\uD83C\uDF2D', sort_order: 1 },
-  { id: crypto.randomUUID(), name: 'Brezel', price: 1.50, icon: '\uD83E\uDD68', sort_order: 2 },
-  { id: crypto.randomUUID(), name: 'Kuchen', price: 2.00, icon: '\uD83C\uDF70', sort_order: 3 },
-  { id: crypto.randomUUID(), name: 'Waffel', price: 2.50, icon: '\uD83E\uDDC7', sort_order: 4 },
-  { id: crypto.randomUUID(), name: 'Getr\u00e4nk', price: 2.00, icon: '\uD83E\uDD64', sort_order: 5 }
+  { id: crypto.randomUUID(), name: 'Steak',      price: 4.50, icon: '\uD83E\uDD69', sort_order: 2 },
+  { id: crypto.randomUUID(), name: 'Brezel',     price: 1.50, icon: '\uD83E\uDD68', sort_order: 3 },
+  { id: crypto.randomUUID(), name: 'Pommes',     price: 3.00, icon: '\uD83C\uDF5F', sort_order: 4 },
+  { id: crypto.randomUUID(), name: 'Kuchen',     price: 2.00, icon: '\uD83C\uDF70', sort_order: 5 },
+  { id: crypto.randomUUID(), name: 'Cola',       price: 2.00, icon: '\uD83E\uDD64', sort_order: 6 },
+  { id: crypto.randomUUID(), name: 'Bier',       price: 3.00, icon: '\uD83C\uDF7A', sort_order: 7 },
+  { id: crypto.randomUUID(), name: 'Wein',       price: 3.50, icon: '\uD83C\uDF77', sort_order: 8 }
 ];
 
-const STORAGE_PRODUCTS = 'rsn_hocketse_v21_products';
-const STORAGE_CUSTOM_ICONS = 'rsn_hocketse_v21_custom_icons';
+const STORAGE_PRODUCTS = 'rsn_hocketse_v23_products';
+const STORAGE_CUSTOM_ICONS = 'rsn_hocketse_v23_custom_icons';
 
 let products = [];
 let customIcons = [];
@@ -189,20 +202,45 @@ function renderProducts() {
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'product-card';
+
     const iconSpan = document.createElement('span');
     iconSpan.className = 'product-icon';
     iconSpan.innerHTML = iconMarkup(p.icon);
+
     const nameSpan = document.createElement('span');
     nameSpan.className = 'product-name';
     nameSpan.textContent = p.name;
+
     const priceSpan = document.createElement('span');
     priceSpan.className = 'product-price';
     priceSpan.textContent = money(p.price);
+
+    const badge = document.createElement('span');
+    badge.className = 'qty-badge';
+    badge.dataset.productId = p.id;
+    badge.textContent = '';
+    badge.hidden = true;
+
     btn.appendChild(iconSpan);
     btn.appendChild(nameSpan);
     btn.appendChild(priceSpan);
+    btn.appendChild(badge);
     btn.addEventListener('click', () => addToCart(p.id));
     grid.appendChild(btn);
+  });
+  updateProductBadges();
+}
+function updateProductBadges() {
+  document.querySelectorAll('.qty-badge').forEach(b => {
+    const id = b.dataset.productId;
+    const item = cart.get(id);
+    if (item && item.qty > 0) {
+      b.textContent = item.qty;
+      b.hidden = false;
+    } else {
+      b.textContent = '';
+      b.hidden = true;
+    }
   });
 }
 function addToCart(id) {
@@ -270,6 +308,9 @@ function renderCart() {
   $('total-pay').textContent = money(t);
   renderQuickPay(t);
   renderChange();
+  updateProductBadges();
+  const co = $('checkout');
+  if (co) co.disabled = cart.size === 0;
 }
 function renderQuickPay(t) {
   const box = $('quick-buttons');
@@ -517,6 +558,22 @@ function wireEvents() {
       showToast('Bild konnte nicht verarbeitet werden');
     }
     e.target.value = '';
+  });
+
+  $('checkout').addEventListener('click', () => {
+    if (cart.size === 0) { showToast('Warenkorb ist leer'); return; }
+    const t = total();
+    const given = parseMoney($('given-input').value);
+    if (given > 0 && given < t) { showToast('Gegebener Betrag zu gering'); return; }
+    const change = given > 0 ? given - t : 0;
+    if (given > 0) {
+      showToast('Verkauft! R\u00fcckgeld: ' + money(change));
+    } else {
+      showToast('Verkauft! Summe: ' + money(t));
+    }
+    cart.clear();
+    $('given-input').value = '';
+    renderCart();
   });
 
   document.addEventListener('keydown', (e) => {

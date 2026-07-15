@@ -2,7 +2,7 @@
 
 window.APP_CONFIG = {
   schoolName: 'Realschule Neuffen',
-  logoUrl: '',
+  logoUrl: 'https://realschule-neuffen.de/wp-content/uploads/2024/06/logo.svg',
   adminPasswordHash: '2217ab5ce2d6f562246d7b1e951783c651682f25878e177ff0280f6f7c788bad'
 };
 
