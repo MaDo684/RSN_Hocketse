@@ -1,17 +1,19 @@
-# RSN Hocketse Kasse - Version 2.1
+# RSN Hocketse Kasse - Version 2.3
 
-Bugfix-Version: Icon- und Admin-Fenster lassen sich zuverlaessig schliessen.
+## Neue Funktionen in V2.3
 
-## Was ist neu
+- Offizielles Realschule-Neuffen-Logo eingebunden (SVG von der Schulwebsite)
+- Blaues Realschul-Farbschema (Navy #003d78 + Gold #f5b921)
+- Mengen-Badge oben rechts in der Produktkachel zeigt, wie oft ein Artikel im Warenkorb liegt
+- Neuer gruener "Kauf abschliessen"-Button unterhalb der Rueckgeld-Anzeige
+- Deutlich mehr Schulfest-Icons: Fleisch, Steak, Bier, Wein, Sekt, Whisky, Cocktail, Cola, Saftpackung, Eiswuerfel etc.
+- Bugfix beibehalten: Overlays schliessen zuverlaessig ueber X, Backdrop-Klick und ESC
+- Cache-Buster ?v=23 fuer CSS und JS
 
-- Overlay-Bugfix: Fenster schliessen bei X, Backdrop-Klick und ESC.
-- CSS: [hidden] und .overlay[hidden] mit display:none !important.
-- JS: open/close-Funktionen setzen hidden UND style.display.
-
-## Struktur nach dem Upload
+## Dateien
 
 ```
-RSN_Hocketse/
+RSN_Hocketse_V23/
 +-- index.html
 +-- README.md
 +-- css/style.css
@@ -19,24 +21,18 @@ RSN_Hocketse/
 +-- js/app.js
 ```
 
-## Nach dem Upload
+## GitHub-Upload
 
-Browser hart neu laden: Strg+F5 oder URL mit ?v=21 aufrufen.
-Bei alten Testdaten: F12 Konsole -> localStorage.clear(); location.reload();
+1. ZIP entpacken
+2. Alle Dateien direkt in den Root des Repositories `RSN_Hocketse` hochladen (bestehende Dateien ersetzen)
+3. `index.html` muss im Root liegen, nicht in einem Unterordner
+4. Nach dem Upload einmal: Strg+F5 oder URL mit ?v=23 aufrufen
+5. Bei alten Testdaten: F12 -> Console -> `localStorage.clear(); location.reload();`
 
 ## Admin-Passwort
 
-FV_RSN2025 (nur SHA-256-Hash im Code).
+FV_RSN2025 (im Code liegt nur der SHA-256-Hash)
 
-## Supabase Policies
+## Supabase-Setup (schon erledigt)
 
-```sql
-alter table products enable row level security;
-
-create policy "public read" on products for select using (true);
-create policy "public write" on products for all using (true) with check (true);
-```
-
-
-## Version 2.2
-Der Schliessen-Button hat jetzt einen direkten Inline-Fallback und funktioniert auch dann, wenn ein gecachtes JavaScript oder ein Event-Listener stoert. CSS und JavaScript werden mit `?v=22` cache-frei geladen.
+Tabelle `products` mit UUID-Primary-Key und Policies fuer public read/write.

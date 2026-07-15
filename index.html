@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#0b2445">
+  <meta name="theme-color" content="#003d78">
   <title>RSN Hocketse Kasse</title>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Crect width='120' height='120' rx='24' fill='%230b2445'/%3E%3Ctext x='60' y='72' text-anchor='middle' font-family='Arial' font-size='38' font-weight='700' fill='%23d8ad35'%3ERSN%3C/text%3E%3C/svg%3E">
-  <link rel="stylesheet" href="css/style.css?v=22">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Crect width='120' height='120' rx='24' fill='%23003d78'/%3E%3Ctext x='60' y='72' text-anchor='middle' font-family='Arial' font-size='38' font-weight='700' fill='%23f5b921'%3ERSN%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/style.css?v=23">
   <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script defer src="js/config.js?v=22"></script>
-  <script defer src="js/app.js?v=22"></script>
+  <script defer src="js/config.js?v=23"></script>
+  <script defer src="js/app.js?v=23"></script>
 </head>
 <body>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
@@ -38,7 +38,6 @@
         </div>
         <div id="sync-state" class="sync-badge">Lade Daten&hellip;</div>
       </div>
-
       <div class="section-head">
         <h2>Produkte</h2>
         <span id="product-count">0 Artikel</span>
@@ -52,17 +51,16 @@
         <button id="cart-clear" type="button" class="text-button">Leeren</button>
       </div>
       <div id="cart-list" class="cart-list empty">Noch keine Artikel ausgew&auml;hlt.</div>
-
       <div class="pay-total">
         <span>Zu zahlen</span>
         <strong id="total-pay">0,00 &euro;</strong>
       </div>
-
       <div class="payment-card">
         <label for="given-input">Gegeben</label>
         <input id="given-input" type="text" inputmode="decimal" placeholder="z. B. 20,00">
         <div id="quick-buttons" class="quick-buttons"></div>
         <div id="change-output" class="change neutral">R&uuml;ckgeld: 0,00 &euro;</div>
+        <button id="checkout" type="button" class="checkout-btn" disabled>Kauf abschlie&szlig;en</button>
       </div>
     </aside>
   </main>
@@ -75,7 +73,6 @@
   <div id="admin-overlay" class="overlay" hidden style="display:none">
     <section class="admin-panel" role="dialog" aria-modal="true" aria-labelledby="admin-title">
       <button id="admin-close" class="close-button" type="button" aria-label="Schlie&szlig;en" onclick="event.stopPropagation();const o=document.getElementById('admin-overlay');o.hidden=true;o.style.display='none';return false;">&times;</button>
-
       <div id="login-box" class="login-box">
         <h2 id="admin-title">Admin-Bereich</h2>
         <p>Passwort eingeben. Im Code liegt nur der SHA-256-Hash.</p>
@@ -83,7 +80,6 @@
         <button id="admin-login" type="button" class="primary-btn full">Einloggen</button>
         <p id="login-error" class="form-error"></p>
       </div>
-
       <div id="admin-content" hidden>
         <h2>Produktverwaltung</h2>
         <p class="hint-box">&Auml;nderungen werden in Supabase gespeichert und auf alle Kassen &uuml;bertragen.</p>
