@@ -119,3 +119,5 @@ button{cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:tran
 /* v2.1 Bugfix: hidden-Attribut muss display:grid der Overlays schlagen */
 [hidden]{display:none !important}
 .overlay[hidden]{display:none !important}
+
+.close-button{z-index:100;pointer-events:auto}
